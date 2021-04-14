@@ -2,6 +2,7 @@ let messages = {
     "start": 'Web Speech API has started',
     "end": 'Web Speech API has ended :(',
     "upgrade": 'Web Speech API is not supported Ups!',
+    "process": 'process',
 }
 
 music = document.getElementById('music1');
@@ -30,7 +31,7 @@ function logAction(message) {
     }
 }
 
-function startOrStop(){
+function startOrStop(event){
     if (recognizing) {
         recognition.stop();
         log_area.value = '';
@@ -70,11 +71,11 @@ if (!('webkitSpeechRecognition' in window)) {
         logAction('start');
     };
 
-    recognition.onend = function() {
+    recognition.onend = function(e) {
         logAction('end');
-        startOrStop();
+        startOrStop(e);
         recognizing = false;
-        startOrStop();
+        startOrStop(e);
         if (ignore_onend) {
             return;
         }
@@ -90,6 +91,7 @@ if (!('webkitSpeechRecognition' in window)) {
     };
 
     recognition.onresult = function(event) {
+        logAction('process');
         let interim_transcript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
@@ -111,7 +113,7 @@ if (!('webkitSpeechRecognition' in window)) {
 				music2.play();
 
 			}
-			if (final_transcript.trim().includes("go ") || final_transcript.trim().endsWith("go")) {
+			if (final_transcript.trim().includes(" go ") || final_transcript.trim().endsWith(" go") || final_transcript.trim().startsWith("go ") || final_transcript.trim()==="go") {
 				music2.pause();
 				music.play();
 			}
