@@ -9,7 +9,6 @@ music = document.getElementById('music1');
 music2 = document.getElementById('music2');
 
 let ignore_onend;
-let start_timestamp;
 let recognition;
 let final_transcript = '';
 let recognizing = false;
@@ -44,7 +43,6 @@ function startOrStop(event){
     enableStopButton()
     recognition.start();
     ignore_onend = false;
-    start_timestamp = event.timeStamp;
 }
 
 function enableStartButton(){
@@ -100,30 +98,53 @@ if (!('webkitSpeechRecognition' in window)) {
                 interim_transcript += event.results[i][0].transcript;
             }
         }
-        if(final_transcript === '')
+        if(final_transcript !== '')
         {
-            final_textarea.value = interim_transcript;
+            interim_transcript = final_transcript;
+            final_transcript = '';
+            ignore_onend = false;
         }
-        else {
-            final_transcript = final_transcript.toLowerCase();
-            final_textarea.value = final_transcript;
-			console.log(final_transcript);
-			if (final_transcript.trim().includes("zagraj muzykę")) {
-				music.pause();
-				music2.play();
-
-			}
-			if (final_transcript.trim().includes(" go ") || final_transcript.trim().endsWith(" go") || final_transcript.trim().startsWith("go ") || final_transcript.trim()==="go") {
-				music2.pause();
-				music.play();
-			}
-			if (final_transcript.trim().includes("stop")) {
-				music2.pause();
-				music.pause();
-			}
-			final_transcript = '';
-			ignore_onend = false;
-			start_timestamp = event.timeStamp;
+        interim_transcript = interim_transcript.toLowerCase().trim();
+        final_textarea.value = interim_transcript;
+        choosenCommand = "None";
+        choosenComandIndex = -1;
+        if (interim_transcript.includes("zagraj muzykę")) {
+            index = interim_transcript.lastIndexOf("zagraj muzykę");
+            if (choosenComandIndex < index) {
+                choosenCommand = "zagraj muzykę";
+            }
+        }
+        if ((" "+interim_transcript+" ").includes(" go ")) {
+            index = (" "+interim_transcript+" ").lastIndexOf(" go ");
+            if (choosenComandIndex < index) {
+                choosenCommand = "go";
+            }
+        }
+        if (interim_transcript.includes("stop")) {
+            index = interim_transcript.lastIndexOf("stop");
+            if (choosenComandIndex < index) {
+                choosenCommand = "stop";
+            }
+        }
+        switch(choosenCommand) {
+            case "stop":
+                music2.pause();
+                music.pause();
+                recognition.stop();
+                break;
+            case "go":
+                music2.pause();
+                music.play();
+                recognition.stop();
+                break;
+            case "zagraj muzykę":
+                music.pause();
+                music2.play();
+                recognition.stop();
+                break;
+            default:
+                if (interim_transcript.length > 10)
+                    recognition.stop();
         }
     };
 }
