@@ -1,7 +1,6 @@
 let messages = {
     "start": 'Web Speech API has started',
     "end": 'Web Speech API has ended :(',
-    "process": 'Speech processing',
     "upgrade": 'Web Speech API is not supported Ups!',
 }
 
