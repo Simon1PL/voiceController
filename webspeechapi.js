@@ -73,7 +73,9 @@ if (!('webkitSpeechRecognition' in window)) {
 
     recognition.onend = function() {
         logAction('end');
+        startOrStop();
         recognizing = false;
+        startOrStop();
         if (ignore_onend) {
             return;
         }
@@ -86,11 +88,9 @@ if (!('webkitSpeechRecognition' in window)) {
             range.selectNode(document.getElementById('final'));
             window.getSelection().addRange(range);
         }
-        start_button.click();
     };
 
     recognition.onresult = function(event) {
-        logAction('process');
         let interim_transcript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
