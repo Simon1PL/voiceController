@@ -1,0 +1,1 @@
+python C:/Users/Szymon/Desktop/voiceController/seleniumVoiceRec.py && taskkill -IM "chromedriver.exe" -F
