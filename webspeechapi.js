@@ -1,7 +1,8 @@
 let messages = {
     "start": 'Web Speech API has started',
+    "end": 'Web Speech API has ended :(',
     "process": 'Speech processing',
-    "upgrade": 'Web Speech API is not supported',
+    "upgrade": 'Web Speech API is not supported Ups!',
 }
 
 music = document.getElementById('music1');
@@ -61,16 +62,17 @@ function enableStopButton(){
 if (!('webkitSpeechRecognition' in window)) {
     logAction('upgrade');
 } else {
-    logAction('start');
     recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
 
     recognition.onstart = function() {
         recognizing = true;
+        logAction('start');
     };
 
     recognition.onend = function() {
+        logAction('end');
         recognizing = false;
         if (ignore_onend) {
             return;
@@ -84,9 +86,11 @@ if (!('webkitSpeechRecognition' in window)) {
             range.selectNode(document.getElementById('final'));
             window.getSelection().addRange(range);
         }
+        start_button.click();
     };
 
     recognition.onresult = function(event) {
+        logAction('process');
         let interim_transcript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
@@ -98,7 +102,6 @@ if (!('webkitSpeechRecognition' in window)) {
         if(final_transcript === '')
         {
             final_textarea.value = interim_transcript;
-            logAction('process');
         }
         else {
             final_transcript = final_transcript.toLowerCase();
